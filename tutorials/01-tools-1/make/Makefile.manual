@@ -1,0 +1,18 @@
+.PHONY: all clean
+
+all: make_tutorial
+
+make_tutorial: main.o major.o minor.o
+	g++ -o make_tutorial main.o major.o minor.o
+
+main.o: main.cpp major.h
+	g++ -c -o main.o main.cpp
+
+major.o: major.cpp major.h minor.h
+	g++ -c -o major.o major.cpp
+
+minor.o: minor.cpp minor.h
+	g++ -c -o minor.o minor.cpp
+
+clean:
+	rm -f make_tutorial main.o major.o minor.o

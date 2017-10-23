@@ -1,0 +1,22 @@
+PROGRAM ?= program
+SOURCES := $(wildcard *.cpp)
+OBJECTS := $(patsubst %.cpp, %.o, $(SOURCES))
+DEPENDS := $(patsubst %.cpp, %.d, $(SOURCES))
+
+CPPFLAGS += -MMD -MP
+CXXFLAGS += -g -O0 -std=c++14
+
+.PHONY: all clean
+
+all: $(PROGRAM)
+
+$(PROGRAM): $(OBJECTS)
+	g++ -o $@ $^
+
+%.o: %.cpp
+	g++ $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<
+
+clean:
+	rm -f $(PROGRAM) $(OBJECTS) $(DEPENDS)
+
+-include $(DEPENDS)

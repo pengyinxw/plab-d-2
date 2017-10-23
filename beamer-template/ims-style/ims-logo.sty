@@ -1,0 +1,93 @@
+\ProvidesPackage{ims-logo}[2012/2/28]
+%Using the package options german or english chooses the language for the Wort-Bild-Marke. Default is german
+%Provides the commands \makeimslogo{size} and \makeimswbm{size}, where size is the distance from the left border of the logo to the start of the text in the wbm. \makeimslogo uses the same scaling
+%Package has only been tested with texlive 2012 and higher, so it might not work with older tex versions
+\RequirePackage{ifthen}
+\newboolean{@ims@logo@german}
+\setboolean{@ims@logo@german}{false}
+\DeclareOption{german}{\setboolean{@ims@logo@german}{true}}
+\DeclareOption{english}{\setboolean{@ims@logo@german}{false}}
+\ExecuteOptions{german}
+\ProcessOptions
+
+\usepackage{tikz, pgf}
+\usepackage{iftex}
+\usetikzlibrary{calc, positioning}
+
+\ifPDFTeX
+  \def\@inst@IMS@wm@ext{.pdf}%
+\else
+  \def\@inst@IMS@wm@ext{.eps}%
+\fi
+
+\if@ims@logo@german
+  \RequirePackage{ngerman}%
+  \def\@inst@IMS@title{Institut f"ur Mikroelektronische Systeme}%
+  \edef\@inst@IMS@wm{imswmde\@inst@IMS@wm@ext}%
+\else
+  \def\@inst@IMS@title{Institute of Microelectronic Systems}%
+  \edef\@inst@IMS@wm{imswmen\@inst@IMS@wm@ext}%
+\fi
+
+\newcommand{\render@ims@logo}{%
+    \path let
+      \p1=($(1cm, {random() * .8cm + .05cm})$),
+      \p4=($(0cm, {random() * .8cm + .05cm})$)
+    in let
+      \p2=($({.9cm - random()  * .35cm}, {(.85cm - \y1) * random() + \y1 + .1cm})$),
+      \p3=($({.1cm + random()  * .35cm}, {(.85cm - \y4) * random() + \y4 + .1cm})$)
+    in
+      [fill=black] (0cm, 0cm) -- (1cm, 0cm)
+      -- (\p1)      -- (\x2, \y1) -- (\p2) -- (\x1, \y2)
+      -- (1cm, 1cm) -- (0cm, 1cm)
+      -- (\x4, \y3) -- (\p3) --  (\x3,\y4) -- (\p4)
+    -- cycle
+}
+
+\newcommand{\makeimslogo}[1]{%
+  \pgfmathsetmacro{\ims@scale@Logo}{.82*#1/1cm}%
+  \begin{tikzpicture}[scale=\ims@scale@Logo]
+    \render@ims@logo;
+  \end{tikzpicture}
+}
+
+\newcommand{\@print@ims@wbm@text}{%
+    \fontfamily{\ims@wbm@font@family}\selectfont%
+    \pgfmathsetmacro{\ims@Logo@font@size}{7*\ims@scale@Logo}%
+    \pgfmathsetmacro{\ims@Logo@font@skip}{10.5*\ims@scale@Logo}%
+    \fontsize{\ims@Logo@font@size pt}{\ims@Logo@font@skip pt}%
+    \node(logo@ims@text) at ($(\ims@Logo@text@xoffset cm, 0 cm)$) [anchor = base west, inner sep=0cm] {IMS};
+    \node(logo@ims@text2) [ below=\ims@Logo@font@skip pt of logo@ims@text.base west,  anchor = base west] {\@inst@IMS@title};
+    \node(logo@ims@text3) [ below=\ims@Logo@font@skip pt of logo@ims@text2.base west, anchor = base west] {Leibniz Universit"at Hannover};
+}
+
+\newcommand{\ims@wbm@font@family}{pun}
+\IfFileExists{t1pun.fd}{}{%
+  \IfFileExists{\@inst@IMS@wm}{%
+    \PackageWarning{ims-logo}{Font pun replaced with \@inst@IMS@wm!}%
+    \renewcommand{\@print@ims@wbm@text}{%
+      \pgfmathsetmacro{\ims@text@yoffset}{.1475*\ims@size/1cm}%
+      \node(logo@ims@text) at ($(\ims@Logo@text@xoffset cm, \ims@text@yoffset cm)$) [anchor = north west, inner sep=0cm] {\includegraphics[height=\ims@scale@Logo cm]{\@inst@IMS@wm}}; 
+    }
+  }{%
+    \PackageWarning{ims-logo}{Font pun replaced with lmss, not CI conform!}%
+    \renewcommand{\ims@wbm@font@family}{lmss}%
+  }%
+}
+
+%ims logo including text
+%parameter gives the x offset to text
+\newcommand{\makeimswbm}[1]{%
+  \pgfmathsetmacro{\ims@size}{#1}%
+  \pgfmathsetmacro{\ims@scale@Logo}{.82*#1/1cm}%
+  \pgfmathsetmacro{\ims@Logo@text@xoffset}{#1/1cm - 0.015}%tex doesn't set text precisely, so some manipulation is needed to ensure alignment
+     
+  \begin{tikzpicture}[inner sep=0cm]
+    \begin{scope}[scale=\ims@scale@Logo]
+      \render@ims@logo;  
+    \end{scope}
+    \@print@ims@wbm@text
+  \end{tikzpicture}
+}
+
+

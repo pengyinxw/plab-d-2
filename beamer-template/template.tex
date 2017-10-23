@@ -1,0 +1,25 @@
+\documentclass[t]{beamer}
+
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[scaled=0.92]{helvet}
+%The contents of the ims subdirectory must be in the latex search path for this to work. 
+%This can be achieved by setting the TEXINPUTS environment variable (can be achived using "export TEXINPUTS=./ims-style:$TEXINPUTS")
+%beamertheme has only been tested with texlive 2012 and higher, so it might not work with older tex versions
+\usetheme[german]{IMS}
+
+\begin{document}
+%   showtitleframe syntax: \showtitleframe{title}[img][footer content], last two arguments optional, img can also be empty
+	\showtitleframe{Mustervortrag}[][Mustergruppe]
+	\begin{frame}[t]{Lorem Ipsum}
+		\begin{itemize}
+			\item A
+			\item B
+			\item C
+		\end{itemize}
+	\end{frame}
+\end{document}
+
+
+

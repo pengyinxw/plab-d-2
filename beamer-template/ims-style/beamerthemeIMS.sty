@@ -1,0 +1,288 @@
+\ProvidesPackage{beamerthemeIMS}[2012/2/11]
+%Provides the general beamertheme as well as a custom \showtitleframe command
+%Using the package options german or english chooses the language. Default is german
+%showtitleframe is used as followed: \showtitleframe{title}[image-path][footer content], last two arguments optional, image-path can also be empty
+%Package has only been tested with texlive 2012 and higher, so it might not work with older tex versions
+\mode<presentation>
+
+\newif\ifbeamer@archer
+\beamer@archerfalse
+\newif\ifbeamer@progressbar
+\beamer@progressbarfalse
+\newif\ifbeamer@debug
+\beamer@debugfalse
+\newif\ifbeamer@ims@german
+\beamer@ims@germantrue
+
+\DeclareOptionBeamer{archer}{\beamer@archertrue}
+\DeclareOptionBeamer{progressbar}{\beamer@progressbartrue}
+\DeclareOptionBeamer{debug}{\beamer@debugtrue}
+\DeclareOptionBeamer{german}{\beamer@ims@germantrue}
+\DeclareOptionBeamer{english}{\beamer@ims@germanfalse}
+
+\ProcessOptionsBeamer
+
+\usepackage{textpos,
+            eso-pic,
+            graphicx,
+            ifthen}
+\usepackage{etoolbox}%for ifdefempty
+\usepackage{xparse}%DeclareDocumanteCommand
+
+\useinnertheme{rectangles}
+\usepackage{tikz,pgf} % Positionsangaben
+\usepackage{adjustbox}
+\newcommand\conf{}
+\newcommand\conference[1]{\renewcommand\conf{#1}}
+
+
+
+
+%Patch \part to save the title in \parttitle from http://tex.stackexchange.com/a/13392
+\newcommand*\parttitle{}
+\let\origpart\part
+\renewcommand*{\part}[2][]{%
+   \ifx\\#1\\% optional argument not present?
+      \origpart{#2}%
+      \renewcommand*\parttitle{#2}%
+   \else
+      \origpart[#1]{#2}%
+      \renewcommand*\parttitle{#1}%
+   \fi
+}
+
+% Choose language specific parts
+\newcommand{\seite}{Page}
+\ifbeamer@ims@german
+  \renewcommand{\seite}{Folie}
+\else
+  \PassOptionsToPackage{english}{ims-logo}%
+\fi
+
+\usepackage{ims-logo}
+
+\newcommand{\footer@Content}{\insertsectionnavigationhorizontal{\textwidth}{}{}}
+\newcommand{\footerContent}[1]{\renewcommand*{\footer@Content}{#1}}
+
+
+\newcommand{\ims@title@content}{%
+  \inserttitle
+  \color{gray}
+  \normalsize
+  \\[5mm]
+  \ifdefempty{\parttitle}{}{\parttitle\\[5mm]}
+  \insertauthor
+  \\[3mm]
+  \insertinstitute
+  \\[3mm]
+  \insertdate
+}
+
+\newcommand{\ims@title@img}{%
+}
+
+
+% Setfonts
+\def\UrlFont{\color{uniblue}\tt} % URL-Font auf Typewriter
+%\renewcommand{\familydefault}{pr4uh-1em}
+
+
+%Setting Length
+\setlength{\parindent}{0pt}   % Kein Absatzeinzug
+\setlength{\unitlength}{1mm}  % Default f\"ur Einheitsl\"angen: 1mm
+
+
+%Define CI colors
+\definecolor{unigreen}{cmyk}{0.30,0,0.94,0}
+\definecolor{uniblue}{cmyk}{0.80,0.55,0,0}
+\definecolor{unigray}{rgb}{0.61,0.641,0.645}
+\definecolor{mygray}{gray}{.9}
+\definecolor{lightgray}{rgb}{0.859,0.867,0.867}
+\definecolor{lightblue}{rgb}{0.6,0.725,0.85}
+\definecolor{lightgreen}{rgb}{.467,.621,.176}
+\definecolor{yellow}{rgb}{1,1,0}
+\definecolor{darkyellow}{rgb}{.6,.6,0}
+
+%Changes to the template itself
+%Size: 12.8cm,9.6cm
+%otherwise: 16.5, 18.3
+\newcommand{\drawDebug}{%
+    \foreach\n in {-1,1,2,...,20} {
+	\node[anchor=north west, inner sep=0, minimum width = .1cm, minimum height=0.05cm, fill=black] at (0cm, -\n cm){};
+        \node[anchor=north west, inner sep=0, minimum width = .05cm, minimum height=.1cm, fill=black] at (\n cm,0cm){};
+        \node[anchor=west, inner sep=0] at ($(.2cm,-\n cm)$){\tiny \n};	
+        \node[anchor=north, inner sep=0] at ($(\n cm, -.2cm)$){\tiny \n};	
+        
+     }
+    \draw[xstep=.1,ystep=.1, black, very thin] (0,-9.6cm) grid (12.8cm,0cm)
+}
+
+\setbeamertemplate{background}{
+  \begin{tikzpicture}[remember picture, overlay]
+  \ifbeamer@debug
+    \drawDebug;
+  \fi
+  \end{tikzpicture}
+}
+\newcommand{\define@slide}{
+  \node[anchor=north west, minimum width = 12.8cm, minimum height=9.6cm](slide) at (-0.0cm,0.0cm){};
+}
+
+% Titlepage:
+\setbeamertemplate{mini frames}[tick]
+\setbeamertemplate{mini frame in other subsection}[default][20]
+
+
+\newcommand{\ims@title@page}[3]{%
+\begin{tikzpicture}[remember picture, overlay, shift={(-1.0cm, .2cm)}]%shift necessary since title page is rendered inside the frame, so margins are applied
+%not a perfect solution, but for now it should work
+  \ifbeamer@debug
+    \drawDebug;
+  \fi
+  \coordinate(ims@logo@west) at  (0.35cm, 0cm);
+  \node[anchor=north east](luh@logo@node) 	at (12.5cm, -0.3cm)			{\includegraphics[height=1.0cm]{luh_logo}};
+  \node[anchor=south west](ims@logo@node) at (ims@logo@west|-luh@logo@node.south)	{\makeimswbm{0.7cm}};
+  \node[rectangle, text width=12.81cm, minimum height=0.75cm, anchor=south west, fill=lightgray](footer@line) at (-0.01cm, -9.61cm) {\hspace{1.05cm}%0.35cm ims@logo@west + 0.7cm textoffset inside logo 
+    #3%
+  };
+    
+  \node[below right=1.2cm and .7cm of ims@logo@node.south west, anchor=north west, align=left,text width=10cm](title@content@node) {%
+    \bfseries\color{uniblue}\LARGE #1%
+  };
+  \path let 
+    \p1=($(title@content@node.south)$),%
+    \p2=($(\p1) - (footer@line.north)$)
+  in  
+    node[anchor=south west, inner sep=0cm, text height=\y2, text width=12cm] at (footer@line.north west) {%
+    \newcommand{\contentheight}{\y2}%
+     #2%
+  };
+  
+\end{tikzpicture}
+}
+
+
+
+\setbeamertemplate{title page}{\ims@title@page{\ims@title@content}{\ims@title@img}{\footer@Content}}
+
+\def\maketitle{%
+  \begin{frame}[t, plain]%
+    \titlepage
+  \end{frame}%
+}
+\DeclareDocumentCommand{\showcustomtitleframe}{m O{} O{}}{%
+  \begin{frame}[t, plain]%
+    \def\ims@showtitle@footer{\ifthenelse{\equal{#3}{}}{\footer@Content}{#3}}%
+    \ims@title@page{#1}{#2}{\ims@showtitle@footer}%
+  \end{frame}%
+}
+\DeclareDocumentCommand{\showtitleframe}{m O{} O{}}{%
+    \def\ims@showtitle@img{\ifthenelse{\equal{#2}{}}{}{\includegraphics[height=\contentheight, width=\textwidth, keepaspectratio]{#2}}}%
+    \showcustomtitleframe{#1}[\ims@showtitle@img][#3]
+}
+\DeclareDocumentCommand{\showparttitleframe}{O{} O{}}{%
+     \showtitleframe{\parttitle}[#1][#2]%
+}
+
+\ifbeamer@debug
+  \tikzset{ims@node@style/.style={%
+%    fill=#1%
+  }}
+\else
+  \tikzset{ims@node@style/.style={%
+%    fill=#1%
+  }}
+\fi
+
+
+
+
+% Header:
+\setbeamertemplate{headline}{%
+\begin{tikzpicture}[remember picture, overlay, inner sep=0]
+  %slide: (0cm, 0cm) -- (12.8cm, -9.6cm)
+  \coordinate(ims@logo@west) at  (0.5cm, 0cm);
+  \node[anchor=north east](luh@logo@node) 	at (12.5cm, -0.3cm)			{\includegraphics[height=.6cm]{luh_logo}};
+  \node[anchor=south west](ims@logo@node) at (ims@logo@west|-luh@logo@node.south)	{%
+     \makeimswbm{0.5cm}%
+  };
+  \path let
+    \p1=($(ims@logo@node.south)-(footer@node.north)$),
+    \p2=($(\p1)-(0cm,0.8cm)$),
+    \p3=($(luh@logo@node.east)-(ims@logo@node.west)-(0cm, 0cm)$),
+    \p4=($(\p3)-(0.7cm,0cm)$)
+  in
+    node[rectangle, ims@node@style=lightgray,  below right = 0cm and 0.0cm of ims@logo@node.south west,   text width=\x3, minimum height=\y1, anchor=north west] 	(outerContentNode)   {}
+    node[rectangle, ims@node@style=darkyellow, below right = 0.8cm and 0.5cm of ims@logo@node.south west, text width=\x4, minimum height=\y2, anchor=north west]	(contentNode)   {};
+\end{tikzpicture}
+\vspace*{1cm}
+}
+
+
+% Footer:
+ \setbeamertemplate{footline}{%
+  \ifbeamer@progressbar%
+    \ifthenelse{\insertframenumber<\inserttotalframenumber}{\colorlet{balken}{unigreen}}{\colorlet{balken}{uniblue}}%
+  \else%
+    \colorlet{balken}{unigreen}%
+  \fi%
+  %
+  %slide: (0cm, 0cm) -- (12.8cm, -9.6cm), here: 0cm, 0cm: slide.south west
+  \begin{tikzpicture}[overlay, remember picture, inner sep=0]
+    \pgfmathparse{12.8cm - 3.3cm}; %
+    \let\footer@text@width\pgfmathresult%
+    \node[rectangle,fill=lightgray,text width=12.81cm,minimum height=0.5cm,anchor=south west,text=black,align=justify] (footer@node) at (-0.01cm, -0.01cm){};
+    
+    {\normalfont%
+       \node[anchor=base west, text width=\footer@text@width]	at( 1cm,   .15cm) {\footer@Content};
+       \node[anchor=base east] 					at(12.4cm, .15cm) {\seite\ \insertframenumber};
+    }
+    
+    \node[fill=balken, left=0.3cm of footer@node.north east, anchor=north east, minimum width=2cm, minimum height=.1cm](slide@bar){};
+      
+    \ifbeamer@progressbar%
+       \pgfmathparse{(\paperwidth - 2.3cm) *(\insertframenumber)/(\inserttotalframenumber)}; %
+       \let\progress\pgfmathresult%
+       \node[fill=unigreen, right=0cm of footer@node.north west, anchor=north west, minimum width=\progress, 	 minimum height=.1cm](progress@bar@node) {};
+       \node[fill=uniblue,  right=-.01cm of progress@bar@node.east, 		    minimum width=.1cm,		 minimum height=.1cm] {};
+    \fi%
+  \end{tikzpicture}
+}
+
+% % frametitle:
+\setbeamertemplate{frametitle}{%
+  \begin{beamercolorbox}[wd=\paperwidth,leftskip=9.9mm,rightskip=5mm,vmode]{frametitle}%
+     \usebeamerfont*{frametitle}%
+     \textbf{\insertframetitle}%
+   \end{beamercolorbox}%
+}
+
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{enumerate items}[square]
+\setbeamertemplate{itemize items}{\scriptsize\vrule width1ex height1ex}
+
+%setting beamercolors to CI colors
+\setbeamercolor{colorbox}{fg=uniblue,bg=lightgray}
+\setbeamercolor{frametitle}{fg=uniblue}
+\setbeamercolor{title}{fg=uniblue}
+\setbeamercolor{item}{fg=unigreen}
+\setbeamercolor{subitem}{fg=unigreen}
+\setbeamercolor{description item}{fg=uniblue}
+\setbeamercolor{background canvas}{bg=}
+\setbeamercolor{alerted text}{fg=uniblue}
+\setbeamercolor{block body}{bg=lightgray}
+\setbeamercolor{block title}{bg=unigray}
+\setbeamercolor{white}{bg=white}
+
+%Setting margins
+\setbeamersize{description width=5mm}
+\setbeamersize{text margin left=10mm}
+\setbeamersize{text margin right=5mm}
+\setlength{\leftmargini}{3.5mm}
+
+%Various
+\newcommand\remark[1]{{\color{red}{#1}}}
+\newcommand\pgph[1]{{\color{uniblue}{#1}}}
+\newcommand\newpar{\vspace*{\fill}}
+
+\mode<all>

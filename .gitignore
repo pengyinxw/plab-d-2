@@ -1,0 +1,51 @@
+# ignore temporary editor files
+*~
+\#*\#
+.\#*
+
+# ignore object and dependency files
+*.o
+*.d
+
+# ignore MS Office temporary files
+~$*
+
+#ignore latex temporary files
+*.vrb
+*.aux
+*.fls
+*.dvi
+*.nav
+*.snm
+*.toc
+*.fdb_latexmk
+*.log
+*.tex.backup
+
+# ignore eclipse and qtcreator project settings
+.project
+.cproject
+.metadata
+.settings
+*.config
+*.creator
+*.files
+*.includes
+*.user
+*callgrind.out.*
+
+#ignore Doxgen files
+implementation/doxygen
+doxygen.zip
+
+#ignore binaries
+implementation/plab
+tutorials/*/*_tutorial
+tutorials/*/*/*_tutorial
+.libs
+*.a
+!api/lib32/*.a
+!api/lib64/*.a
+
+#nfs files
+.nfs*

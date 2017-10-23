@@ -1,0 +1,70 @@
+\documentclass[10pt,letterpaper,final,conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+\pagestyle{empty}
+\usepackage{mathptmx}
+\usepackage{times}
+\usepackage[scaled=.92]{helvet}
+\usepackage{ifpdf}
+\ifpdf
+\usepackage[pdftex]{graphicx}
+\usepackage{epstopdf}
+\else
+\usepackage[dvips]{graphicx}
+\fi
+\usepackage{float}
+\usepackage{cancel}
+\usepackage{cite}
+\newcommand{\Cut}[1]{}
+\newcommand{\myind}[1]{\textit{\scriptsize #1}}
+\newcommand{\tablesize}{\small}
+\newcommand{\degree}{\ensuremath{^\circ\:}}              
+\setlength{\parindent}{0.5cm}
+\usepackage[ngerman]{babel}
+%correctly encode umlauts
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+
+
+% ============================================================================
+% begin document
+% ============================================================================
+
+\begin{document}
+\pagestyle{empty}
+
+\title{Titel}
+
+\author{\IEEEauthorblockN{Autor1, Autor2 und Autor3}
+\vspace*{1em}
+\IEEEauthorblockA{Leibniz Universität Hannover\\
+Email: \{autor1, autor2, autor3\}\\@email.de
+}
+}
+
+
+\renewcommand{\baselinestretch}{1}
+% ============================================================================
+% Abstract
+% ============================================================================
+\maketitle
+\pagestyle{empty}
+ \begin{abstract}
+ \pagestyle{empty}
+ \thispagestyle{empty}
+Hier steht die Zusammenfassung.
+\end{abstract}
+
+% ============================================================================
+% Introduction
+% ============================================================================
+\section{Einleitung}
+Hier steht die Einleitung \cite{Cal2003}.
+
+% ============================================================================
+% Bibs
+% ============================================================================
+\bibliographystyle{IEEEtran}
+\bibliography{latex_template}
+
+\end{document}
