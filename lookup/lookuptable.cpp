@@ -2,53 +2,80 @@
 
 LookupTable::LookupTable(){
 }
-Logic  LookupTable::lookupAnd(vector<Logic>input){
-          n = input.at(0);
-          m = input.at(1);
-          return lookupAnd[m][n];
 
+Logic  LookupTable::lookupAnd(std::vector<Logic>input) {
+    int n,m;
+    n = int(input.at(0));
+    m = int(input.at(1));
+    return Logic(tablookupAnd[m][n]);
 }
-Logic  LookupTable::lookupOr(vector<Logic>input){
-          n = input.at(0);
-          m = input.at(1);
-          return lookupOr[m][n];
 
+Logic  LookupTable::lookupOr(std::vector<Logic>input) {
+    int n,m;
+    n = int(input.at(0));
+    m = int(input.at(1));
+    return Logic(tablookupOr[m][n]);
 }
-Logic  LookupTable::lookupNot(Logic input){
 
-            return lookupNot[input];
-
+Logic  LookupTable::lookupNot(Logic input) {
+    return Logic(tablookupNot[int(input)]);
 }
-Logic  LookupTable::lookupXnor(vector<Logic>input){
-          n = input.at(0);
-          m = input.at(1);
-          return lookupXnor[m][n];
 
+Logic  LookupTable::lookupXnor(std::vector<Logic>input) {
+    int n,m;
+    n = int(input.at(0));
+    m = int(input.at(1));
+    return Logic(tablookupXnor[m][n]);
 }
-Logic  LookupTable::lookupXor(vector<Logic>input){
-          n = input.at(0);
-          m = input.at(1);
-          return lookupXor[m][n];
 
+Logic  LookupTable::lookupXor(std::vector<Logic>input) {
+    int n,m;
+    n = int(input.at(0));
+    m = int(input.at(1));
+    return Logic(tablookupXor[m][n]);
 }
-Logic  LookupTable::lookupNand(vector<Logic>input){
-          n = input.at(0);
-          m = input.at(1);
-          return lookupNand[m][n];
 
+Logic  LookupTable::lookupNand(std::vector<Logic>input) {
+    int n,m;
+    n = int(input.at(0));
+    m = int(input.at(1));
+    return Logic(tablookupNand[m][n]);
 }
-Logic  LookupTable::lookupNor(vector<Logic>input){
-          n = input.at(0);
-          m = input.at(1);
-          return lookupNor[m][n];
 
+Logic  LookupTable::lookupNor(std::vector<Logic>input) {
+    int n,m;
+    n = int(input.at(0));
+    m = int(input.at(1));
+    return Logic(tablookupNor[m][n]);
 }
-Logic judgement(vector<Logic>input,ElementType type){
-    if (type==ElementType.And ){
+
+Logic LookupTable::judgement(std::vector<Logic> input, ElementType type) {
+    int n,m;
+
+    n = int(input.at(0));
+
+    if(input.size() == 2) { // NOT needs only one input: there is no second one
+        m = int(input.at(1));
+    }
+
+    switch (type) {
+    case ElementType::And:
+        return Logic(tablookupAnd[m][n]);
+    case ElementType::Or:
+        return Logic(tablookupOr[m][n]);
+    case ElementType::Not:
+        return Logic(tablookupNot[n]);;
+    default:
+        assert(false);
+        break;
+    }
+}
+
+ /*   if (type==ElementType.And ){
        // std::cout<<"Das Input ist"<<vector<Logic>input<<std::endl;
        // std::cout<<"Das Output ist"<<lookupAnd(input)<<std::endl;
-        return  lookupAnd(input);
-
+        Logic test = LookupTable::lookupAnd(input);
+        return  Logic(1);
     } else if (type==ElementType.Or){
        // std::cout<<"Das Input ist"<<vector<Logic>input<<std::endl;
        // std::cout<<"Das Output ist"<<lookupOr(input)<<std::endl;
@@ -75,9 +102,12 @@ Logic judgement(vector<Logic>input,ElementType type){
         return  lookupNor(input);
     }
     return false;
-}
+ */
+
 
 LookupTable::~LookupTable(){
 }
 
-
+int main() {
+    return 0;
+}
