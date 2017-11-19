@@ -71,6 +71,100 @@ Logic LookupTable::judgement(std::vector<Logic> input, ElementType type) {
     }
 }
 
+Logic LookupTable::judge_all(std::vector<Logic> input, Logic output, ElementType type) {
+    int in1 = 2;
+    int in2 = 2;
+    int out = 2;
+
+    in1 = int(input.at(0));
+    // NOT needs only one input: there is no second one
+    if(input.size() == 2)
+    {
+        in2 = int(input.at(1));
+    }
+    out = int(output);
+
+    int search_x = 2;
+    std::vector<int> combined = { in1, in2, out };
+    std::vector<int>::iterator found_x;
+
+    // search for logical x in vector
+    found_x = find(combined.begin(), combined.end(), search_x);
+
+    if ( found_x != combined.end()) { // found X in vector
+        int index = std::distance(combined.begin(), found_x); // index in vector := value with X
+        if ( index == 2 ) { // output = X; easiest case
+            switch (type) {
+            case ElementType::And:
+                return Logic(tablookupAnd[in1][in2]);
+            case ElementType::Or:
+                return Logic(tablookupOr[in1][in2]);
+            case ElementType::Not:
+                return Logic(tablookupNot[in1]);;
+            default:
+                assert(false);
+                break;
+            }
+        }
+        else { // one input is X; output has static value
+            switch (type) { 
+
+            case ElementType::And: // !!!! am ende error Fall einbauen ( for schleife nichts gefunden) ??? !!!!
+                if (index == 0) {
+                    for (int i=0; i<=4; i++ ) {
+                        // spalte fest; teste fuer jede Zeile (input damit vollstaendig) ob Wert = output
+                        if ( tablookupAnd[i][in2] == out ) {
+                            return Logic(i);
+                        }
+                    }
+                }
+                else {
+                    for (int i=0; i<=4; i++ ) {
+                        // hier zeile fest; teste jede Spalte, wie oben
+                        if ( tablookupAnd[in1][i] == out ) {
+                            return Logic(i);
+                        }
+                    }
+                }
+
+            case ElementType::Or:
+                if (index == 0) {
+                    for (int i=0; i<=4; i++ ) {
+                        // spalte fest; teste fuer jede Zeile (input damit vollstaendig) ob Wert = output
+                        if ( tablookupOr[i][in2] == out ) {
+                            return Logic(i);
+                        }
+                    }
+                }
+                else {
+                    for (int i=0; i<=4; i++ ) {
+                        // hier zeile fest; teste jede Spalte, wie oben
+                        if ( tablookupOr[in1][i] == out ) {
+                            return Logic(i);
+                        }
+                    }
+                }
+
+            case ElementType::Not:
+                for (int i=0; i<=4; i++ ) {
+                    // teste welcher input richtigen output erzaeugt
+                    if ( tablookupNot[i] == out ) {
+                        return Logic(i);
+                    }
+                }
+
+            default:
+                assert(false);
+                break;
+            }
+        }
+    }
+    else { // no X in in- and output
+        return Logic(5); // error
+    }
+}
+
+
  /*   if (type==ElementType.And ){
        // std::cout<<"Das Input ist"<<vector<Logic>input<<std::endl;
        // std::cout<<"Das Output ist"<<lookupAnd(input)<<std::endl;

@@ -5,6 +5,7 @@
 #include <vector>
 #include <iostream>
 #include <string>
+#include <algorithm>
 
 class LookupTable
 {
@@ -14,6 +15,7 @@ public:
     ~LookupTable();
     std::vector<Logic>input;
    Logic judgement(std::vector<Logic>input,ElementType type);
+   Logic judge_all(std::vector<Logic> input, Logic output, ElementType type);
 
 private:
     Logic lookupAnd(std::vector<Logic>input);
