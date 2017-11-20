@@ -1,61 +1,71 @@
-#include "lookuptable.h"
+/**
+  * @brief Lookuptable for logic data
+  *
+  * @author Chenyang Guo, Yike Wang, Richard Reder
+  *
+  * @date 20.11.2017
+  *
+  * @version 1.4
+*/
+
+#include "LookupTable.h"
 
 LookupTable::LookupTable(){
 }
-
+/*
 Logic  LookupTable::lookupAnd(std::vector<Logic>input) {
     int n,m;
-    n = int(input.at(0));
-    m = int(input.at(1));
+    n = static_cast<int>(input.at(0));
+    m = static_cast<int>(input.at(1));
     return Logic(tablookupAnd[m][n]);
 }
 
 Logic  LookupTable::lookupOr(std::vector<Logic>input) {
     int n,m;
-    n = int(input.at(0));
-    m = int(input.at(1));
+    n = static_cast<int>(input.at(0));
+    m = static_cast<int>(input.at(1));
     return Logic(tablookupOr[m][n]);
 }
 
 Logic  LookupTable::lookupNot(Logic input) {
-    return Logic(tablookupNot[int(input)]);
+    return Logic(tablookupNot[static_cast<int>(input)]);
 }
 
 Logic  LookupTable::lookupXnor(std::vector<Logic>input) {
     int n,m;
-    n = int(input.at(0));
-    m = int(input.at(1));
+    n = static_cast<int>(input.at(0));
+    m = static_cast<int>(input.at(1));
     return Logic(tablookupXnor[m][n]);
 }
 
 Logic  LookupTable::lookupXor(std::vector<Logic>input) {
     int n,m;
-    n = int(input.at(0));
-    m = int(input.at(1));
+    n = static_cast<int>(input.at(0));
+    m = static_cast<int>(input.at(1));
     return Logic(tablookupXor[m][n]);
 }
 
 Logic  LookupTable::lookupNand(std::vector<Logic>input) {
     int n,m;
-    n = int(input.at(0));
-    m = int(input.at(1));
+    n = static_cast<int>(input.at(0));
+    m = static_cast<int>(input.at(1));
     return Logic(tablookupNand[m][n]);
 }
 
 Logic  LookupTable::lookupNor(std::vector<Logic>input) {
     int n,m;
-    n = int(input.at(0));
-    m = int(input.at(1));
+    n = static_cast<int>(input.at(0));
+    m = static_cast<int>(input.at(1));
     return Logic(tablookupNor[m][n]);
 }
 
 Logic LookupTable::judgement(std::vector<Logic> input, ElementType type) {
     int n,m;
 
-    n = int(input.at(0));
+    n = static_cast<int>(input.at(0));
 
     if(input.size() == 2) { // NOT needs only one input: there is no second one
-        m = int(input.at(1));
+        m = static_cast<int>(input.at(1));
     }
 
     switch (type) {
@@ -70,19 +80,34 @@ Logic LookupTable::judgement(std::vector<Logic> input, ElementType type) {
         break;
     }
 }
+*/
+
+/**
+  * @brief Given a input and a output with one X value,
+  * the corresponding value is looked up.
+  *
+  * @param input the logical values on the input(s)
+  * @param output the logical value at the output
+  * @param type the kind of gate to be checked
+  *
+  * @return the looked up logic value, which was X before
+  */
 
 Logic LookupTable::judge_all(std::vector<Logic> input, Logic output, ElementType type) {
     int in1 = 2;
     int in2 = 2;
     int out = 2;
 
-    in1 = int(input.at(0));
+    in1 = static_cast<int>(input.at(0));
     // NOT needs only one input: there is no second one
     if(input.size() == 2)
     {
-        in2 = int(input.at(1));
+        in2 = static_cast<int>(input.at(1));
     }
-    out = int(output);
+    else {
+        in2 = static_cast<int>(Logic::logicError); //for not-case we should define in2 other than X
+    }
+    out = static_cast<int>(output);
 
     int search_x = 2;
     std::vector<int> combined = { in1, in2, out };
@@ -100,7 +125,10 @@ Logic LookupTable::judge_all(std::vector<Logic> input, Logic output, ElementType
             case ElementType::Or:
                 return Logic(tablookupOr[in1][in2]);
             case ElementType::Not:
-                return Logic(tablookupNot[in1]);;
+                return Logic(tablookupNot[in1]);
+            case ElementType::Dff:
+            case ElementType::TopLevelCell:
+            case ElementType::Unknown:
             default:
                 assert(false);
                 break;
@@ -109,10 +137,10 @@ Logic LookupTable::judge_all(std::vector<Logic> input, Logic output, ElementType
         else { // one input is X; output has static value
             switch (type) { 
 
-            case ElementType::And: // !!!! am ende error Fall einbauen ( for schleife nichts gefunden) ??? !!!!
+            case ElementType::And:
                 if (index == 0) {
                     for (int i=0; i<=4; i++ ) {
-                        // spalte fest; teste fuer jede Zeile (input damit vollstaendig) ob Wert = output
+                        // Spalte fest; teste fuer jede Zeile (Input damit vollstaendig) ob Wert = Output
                         if ( tablookupAnd[i][in2] == out ) {
                             return Logic(i);
                         }
@@ -120,17 +148,18 @@ Logic LookupTable::judge_all(std::vector<Logic> input, Logic output, ElementType
                 }
                 else {
                     for (int i=0; i<=4; i++ ) {
-                        // hier zeile fest; teste jede Spalte, wie oben
+                        // hier Zeile fest; teste jede Spalte, wie oben
                         if ( tablookupAnd[in1][i] == out ) {
                             return Logic(i);
                         }
                     }
                 }
+                return Logic::logicError;
 
             case ElementType::Or:
                 if (index == 0) {
                     for (int i=0; i<=4; i++ ) {
-                        // spalte fest; teste fuer jede Zeile (input damit vollstaendig) ob Wert = output
+                        // Spalte fest; teste fuer jede Zeile (input damit vollstaendig) ob Wert = Output
                         if ( tablookupOr[i][in2] == out ) {
                             return Logic(i);
                         }
@@ -138,21 +167,25 @@ Logic LookupTable::judge_all(std::vector<Logic> input, Logic output, ElementType
                 }
                 else {
                     for (int i=0; i<=4; i++ ) {
-                        // hier zeile fest; teste jede Spalte, wie oben
+                        // hier Zeile fest; teste jede Spalte, wie oben
                         if ( tablookupOr[in1][i] == out ) {
                             return Logic(i);
                         }
                     }
                 }
+                return Logic::logicError;
 
             case ElementType::Not:
                 for (int i=0; i<=4; i++ ) {
-                    // teste welcher input richtigen output erzaeugt
+                    // teste welcher Input richtigen Output erzeugt
                     if ( tablookupNot[i] == out ) {
                         return Logic(i);
                     }
                 }
-
+                return Logic::logicError;
+            case ElementType::Dff:
+            case ElementType::TopLevelCell:
+            case ElementType::Unknown:
             default:
                 assert(false);
                 break;
@@ -200,8 +233,4 @@ Logic LookupTable::judge_all(std::vector<Logic> input, Logic output, ElementType
 
 
 LookupTable::~LookupTable(){
-}
-
-int main() {
-    return 0;
 }
