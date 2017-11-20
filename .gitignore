@@ -34,6 +34,10 @@
 *.user
 *callgrind.out.*
 
+# ignore kdev files
+.kdev4
+*.kdev4
+
 #ignore Doxgen files
 implementation/doxygen
 doxygen.zip
