@@ -1,3 +1,3 @@
-void multiply(int firstFactor, int secondFactor, int& result) {
+void multi(int firstFactor, int secondFactor, int& result) {
 	result = firstFactor * secondFactor;
 }
